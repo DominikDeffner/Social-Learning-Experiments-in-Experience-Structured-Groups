@@ -54,17 +54,17 @@ for (i in 1:20) {
 
 # Run different stan models
 
-m1 <- stan( file="ewa_model1.stan" , data=dat , chains=1 ) #Individual learning only
+m1 <- stan( file="ewa_model1.stan" , data=dat , chains=1 )  #Individual learning only
 
 m2 <- stan( file="ewa_model2.stan" , data=dat , chains=1 )  #Simplest model with individual and (unbiased) social learning
 
 m3 <- stan( file="ewa_model3.stan" , data=dat , chains=1 )  #Social Learning with frequency and experience bias
 
-m4 <- stan( file="ewa_model10.stan" , data=dat , chains=1 )  #Full Gaussian process regression
+m4 <- stan( file="ewa_model4.stan" , data=dat , chains=1 )  #Full Gaussian process regression
 
-m5 <- stan( file="ewa_model13.stan" , data=dat , chains=1 ) # All functional
+m5 <- stan( file="ewa_model5.stan" , data=dat , chains=1 ) # All functional
 
-m6 <- stan( file="ewa_model14.1.stan" , data=dat , chains=1 )  # All Monotonic effects
+m6 <- stan( file="ewa_model6.stan" , data=dat , chains=1 )  # All Monotonic effects
 
 
 

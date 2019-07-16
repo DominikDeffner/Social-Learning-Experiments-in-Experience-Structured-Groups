@@ -6,10 +6,10 @@ library(rethinking)
 
 #Monotonic effects (EWA 6)
 
-{
-  
 m <- extract.samples(m6)
 
+{
+  
 #Sigma
 Delta_sigmas <- c()
 
@@ -108,6 +108,82 @@ Mean_m_Mat_phi <- apply(m_Mat_phi,2,mean)
 
 }
 
+#All functional (EWA 5)
+
+m <- extract.samples(m5)
+
+{
+
+
+  #GP curves for sigma
+  m_Mat_sigma <- matrix(0, nrow = dat$N_id, ncol = 20)
+  for (j in 1:dat$N_id) {
+    for (i in 1:20) {
+      m_Mat_sigma[j,i] <- inv_logit( (mean(m$a_sigma) + mean(m$v_GP[,j,1])) + (mean(m$b_sigma) + mean(m$v_GP[,j,2]))*i)
+    }
+  }
+  Mean_M_mat_sigma <- apply(m_Mat_sigma,2,mean)
+  
+  #GP curves for f
+  
+  m_Mat_f <- matrix(0, nrow = dat$N_id, ncol = 20)
+  for (j in 1:dat$N_id) {
+    for (i in 1:20) {
+      m_Mat_f[j,i] <- exp((mean(m$a_f) + mean(m$v_GP[,j,5])) + (mean(m$b_f) + mean(m$v_GP[,j,6]))*i)
+      
+    }
+  }
+  Mean_m_Mat_f <- apply(m_Mat_f,2,mean)
+  
+  
+  #GP curves for beta
+  
+  m_Mat_beta <- matrix(0, nrow = dat$N_id, ncol = 20)
+  for (j in 1:dat$N_id) {
+    for (i in 1:20) {
+      m_Mat_beta[j,i] <-(mean(m$a_beta) + mean(m$v_GP[,j,3])) + (mean(m$b_beta) + mean(m$v_GP[,j,4]))*i
+      
+    }
+  }
+  Mean_m_Mat_beta <- apply(m_Mat_beta,2,mean)
+  
+  
+  #GP curves for kappa
+  
+  m_Mat_kappa <- matrix(0, nrow = dat$N_id, ncol = 20)
+  for (j in 1:dat$N_id) {
+    for (i in 1:20) {
+      m_Mat_kappa[j,i] <- inv_logit((mean(m$a_kappa) + mean(m$v_GP[,j,7])) + (mean(m$b_kappa) + mean(m$v_GP[,j,8]))*i)
+      
+    }
+  }
+  Mean_m_Mat_kappa <- apply(m_Mat_kappa,2,mean)
+  
+  #GP curves for lambda
+  
+  m_Mat_l <- matrix(0, nrow = dat$N_id, ncol = 20)
+  for (j in 1:dat$N_id) {
+    for (i in 1:20) {
+      m_Mat_l[j,i] <- exp(mean(m$log_lambda) + mean(m$v_GP[,j,9])) 
+      
+    }
+  }
+  Mean_m_Mat_l <- apply(m_Mat_l,2,mean)
+  
+  
+  #GP curves for phi
+  
+  m_Mat_phi <- matrix(0, nrow = dat$N_id, ncol = 20)
+  for (j in 1:dat$N_id) {
+    for (i in 1:20) {
+      m_Mat_phi[j,i] <- inv_logit(mean(m$logit_phi) + mean(m$v_GP[,j,10])) 
+      
+    }
+  }
+  Mean_m_Mat_phi <- apply(m_Mat_phi,2,mean)
+  
+
+}  
 
 #Full GP model (EWA 4)
 
@@ -182,112 +258,6 @@ m <- extract.samples(m4)
   }
   Mean_m_Mat_phi <- apply(m_Mat_phi,2,mean)
   
-  #Plot it
-  
-  par(mfrow= c(3,2), 
-      mar=c(2,4,2,1), 
-      oma=c(3,0,0,0))
-  
-  graphics.off()
-  png("GP_sigma.png", res = 1200, height = 10, width = 12, units = "cm")
-  
-  plot(Mean_M_mat_sigma, ylim=c(0,1), ylab=expression(sigma),type="n", xlab="Experience", lwd=3, col="black")
-  for (j in 1:dat$N_id) {
-    lines(m_Mat_sigma[j,], type="l", ylim=c(0,1), ylab=expression(sigma), xlab="Experience", lwd=0.5,col="lightgrey")
-  }
-  lines(Mean_M_mat_sigma, type="l", ylim=c(0,1), ylab=expression(sigma), xlab="Experience", lwd=2, col="black")
-  curve(0.9 * exp(-1 * (x-1)) ,1,20,add = TRUE, lty=2, lwd=2)
-  curve(0.4 * exp(-0 * (x-1)) ,1,20,add = TRUE, lty=2,lwd=2)
-  dev.off()
-  
-  
-  plot(Mean_m_Mat_f, ylim=c(0,2), ylab="f",type="n", xlab="Experience", lwd=3, col="black")
-  for (j in 1:dat$N_id) {
-    lines(m_Mat_f[j,], type="l", ylim=c(0,2), ylab=expression(sigma), xlab="Experience", lwd=0.5,col="lightgrey")
-  }
-  lines(Mean_m_Mat_f, type="l", ylim=c(0,2), ylab=expression(sigma), xlab="Experience", lwd=2, col="black")
-  abline(h=1, lty=2)
-  curve(3 * exp(-1 * x) + 1 ,1,20,add = TRUE, lty=2,lwd=2)
-  
-  
-  plot(Mean_m_Mat_beta, ylim=c(-3,3), ylab=expression(beta),type="n", xlab="Experience", lwd=3, col="black")
-  for (j in 1:dat$N_id) {
-    lines(m_Mat_beta[j,], type="l", ylim=c(-3,3), ylab=expression(sigma), xlab="Experience", lwd=0.5,col="lightgrey")
-  }
-  lines(Mean_m_Mat_beta, type="l", ylim=c(-3,3), ylab=expression(sigma), xlab="Experience", lwd=2, col="black")
-  abline(h=0, lty=2)
-  
-  
-  plot(Mean_m_Mat_kappa, ylim=c(0,1), ylab=expression(kappa),type="n", xlab="Experience", lwd=3, col="black")
-  for (j in 1:dat$N_id) {
-    lines(m_Mat_kappa[j,], type="l", ylim=c(0,1), ylab=expression(sigma), xlab="Experience", lwd=0.5,col="lightgrey")
-  }
-  lines(Mean_m_Mat_kappa, type="l", ylim=c(0,1), ylab=expression(sigma), xlab="Experience", lwd=2, col="black")
-  
-  plot(Mean_m_Mat_l, ylim=c(0,1), ylab=expression(lambda),type="n", xlab="Experience", lwd=3, col="black")
-  for (j in 1:dat$N_id) {
-    lines(m_Mat_l[j,], type="l", ylim=c(0,1), ylab=expression(sigma), xlab="Experience", lwd=0.5,col="lightgrey")
-  }
-  lines(Mean_m_Mat_l, type="l", ylim=c(0,1), ylab=expression(sigma), xlab="Experience", lwd=2, col="black")
-  
-  plot(Mean_m_Mat_phi, ylim=c(0,1), ylab=expression(phi),type="n", xlab="Experience", lwd=3, col="black")
-  for (j in 1:dat$N_id) {
-    lines(m_Mat_phi[j,], type="l", ylim=c(0,1), ylab=expression(sigma), xlab="Experience", lwd=0.5,col="lightgrey")
-  }
-  lines(Mean_m_Mat_phi, type="l", ylim=c(0,1), ylab=expression(sigma), xlab="Experience", lwd=2, col="black")
-  
-  
-  mtext(side = 1, line = 1.2 , "Experience", outer = TRUE)
-  
-  
-  #GP parameters
-  #rho
-  par(mfrow= c(2,2), 
-      mar=c(2,4,2,1), 
-      oma=c(3,0,0,0))
-  dens(exp(m$log_rhosq_sigma), xlim=c(0,0.1))
-  dens(exp(rnorm(25000, -1,1)), add=TRUE, lty=2)
-  dens(exp(m$log_rhosq_f),xlim=c(0,5))
-  dens(exp(rnorm(25000, -1,1)),add=TRUE,lty=2,xlim=c(0,5))
-  
-  dens(exp(m$log_rhosq_beta),xlim=c(0,5))
-  dens(exp(rnorm(25000, -1,1)),add=TRUE,lty=2,xlim=c(0,5))
-  
-  dens(exp(m$log_rhosq_kappa),xlim=c(0,5))
-  dens(exp(rnorm(25000, -1,1)),add=TRUE,lty=2,xlim=c(0,5))
-  
-  #etasq
-  
-  par(mfrow= c(2,2), 
-      mar=c(2,4,2,1), 
-      oma=c(3,0,0,0))
-  dens(exp(m$log_etasq_sigma),xlim=c(0,5))
-  dens(exp(rnorm(25000, -1,1)), add=TRUE, lty=2)
-  dens(exp(m$log_etasq_f),xlim=c(0,5))
-  dens(exp(rnorm(25000, -1,1)),add=TRUE,lty=2,xlim=c(0,5))
-  
-  dens(exp(m$log_etasq_beta),xlim=c(0,5))
-  dens(exp(rnorm(25000, -1,1)),add=TRUE,lty=2,xlim=c(0,5))
-  
-  dens(exp(m$log_etasq_kappa),xlim=c(0,5))
-  dens(exp(rnorm(25000, -1,1)),add=TRUE,lty=2,xlim=c(0,5))
-  
-  
-  #sigmasq
-  
-  par(mfrow= c(2,2), 
-      mar=c(2,4,2,1), 
-      oma=c(3,0,0,0))
-  dens(exp(m$log_sigmasq_sigma),xlim=c(0,5))
-  dens(exp(rnorm(25000, -1,1)), add=TRUE, lty=2)
-  dens(exp(m$log_sigmasq_f),xlim=c(0,5))
-  dens(exp(rnorm(25000, -1,1)),add=TRUE,lty=2,xlim=c(0,5))
-  
-  dens(exp(m$log_sigmasq_beta),xlim=c(0,5))
-  dens(exp(rnorm(25000, -1,1)),add=TRUE,lty=2,xlim=c(0,5))
-  
-  dens(exp(m$log_sigmasq_kappa),xlim=c(0,5))
-  dens(exp(rnorm(25000, -1,1)),add=TRUE,lty=2,xlim=c(0,5))
 }
   
 
