@@ -36,8 +36,8 @@ parameters{
     real logit_phi;
 
     real a_sigma; // mean weight of social info for average level of experience
-    real b_sigma;
-    real a_beta;  // mean strength of age bias for average level of experience
+    real b_sigma; // mean strength of age bias for average level of experience
+    real a_beta;
     real b_beta;
     real a_f;
     real b_f;
@@ -48,8 +48,8 @@ parameters{
     // Varying effects clustered on individual
     matrix[10,N_id] z_GP;
 
-    //[1,] a_sigma : mean weight of social info
-    //[2,] b_sigma: max covariance in Gaussian process
+    //[1,] a_sigma : intercept for sigma
+    //[2,] b_sigma: : effect of experience
 
     //[3, ] a_beta
     //[4, ] b_beta
