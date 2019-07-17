@@ -42,7 +42,7 @@ Sim_fct <- function(Tmax, Group_size,N_group,N_sessions,L, Payoff_Better, Payoff
     
     Homunculi$L <-     rtruncnorm(8, a=0, b=+Inf, mean=L, sd=0.05)
     Homunculi$phi <-   rtruncnorm(8, a=0, b=1, mean=phi, sd=0.1)
-    Homunculi$kappa <-   rtruncnorm(8, a=0, b=1, mean=phi, sd=0.1)
+    Homunculi$kappa <-   rtruncnorm(8, a=0, b=1, mean=kappa, sd=0.1)
     
     #2 types of learners
     Homunculi$sigma[1:4] <- rtruncnorm(4, a=0, b=1, mean=sigma, sd=0.1)
